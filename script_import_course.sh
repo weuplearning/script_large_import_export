@@ -1,26 +1,27 @@
 #!/bin/bash
 
-#************2************
-#This script allow you to create a large number of course (edx courses) trough curl,
-#It loop trough a folder containig export of course you want to (re)creates,
+#************3************
+#This script allow you to import a large number of course (edx courses) trough curl,
+#It loop trough a folder containig export of course you want to import,
 #Get the name of each file
 #/!\ THIS FILES MUST BE NAMED AFTER THEIR ID /!\
-#Split the name of each file and send it trough curl
+#Split the name of each file to get the endpoint and send it trough curl
 
 
 
 
-echo "***********************Starting course creation script***********************"
+echo "***********************Starting course import script***********************"
 
 
 
 
 #Token for authentication, using a session already pending
-sessionid="xxxxxxxxxxxxxxxxxx:xxxxx:xxxxxxxxxxxxx:::"
-csrftoken="XXXXXX"
-sitefqdn="studio.XXXXXX.com"
+sessionid=""
+csrftoken=""
+sessionid2=""
 
-#Check if folder named "courses" exist and go inside, if not exit with error code
+
+#Check if folder named "courses" exist and go inside, if not exit with error cide
 if [ -d "./courses" ]
 then
     echo "Folder named courses exist, going in"
@@ -35,41 +36,16 @@ fi
 for file in ./*.tar.gz
 do
 
-  echo "Starting creation of ${file##*/}"
-  #Spliting the filename to get org, number et run of the course
+  #Spliting the filename to get only id
   filename="${file##*/}"
-  filename="$(echo $filename | cut -f 1 -d '.')"
-  echo "Starting creation of $filename "
+  echo "Starting import of $filename"
   IFS=':'
   read -a strarr <<< "$filename"
-  filenametrimed="${strarr[1]//[ ]/+}"
-  IFS='+'
-  read -a strarr <<< "${filenametrimed}"
-  json='{"org":"'${strarr[0]}'","number":"'${strarr[1]}'","display_name":"1","run":"'${strarr[2]}'"}'
-  echo "$json"
+  filenametrimed="$(echo $filename | cut -f 1 -d '.')"
+  
+curl 'https://studio.preprod.amundiacademy.com/import/'$filenametrimed  -H 'Connection: keep-alive' -H 'Pragma: no-cache' -H 'Cache-Control: no-cache' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Origin: https://studio.preprod.amundiacademy.com' -H 'X-CSRFToken: SufhxSryaj52tPa5bgawvX9jEWd5k92v' -H 'X-Requested-With: XMLHttpRequest' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36' -H 'Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryu8pRtChbOypKCMie' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://studio.preprod.amundiacademy.com/import/'$filenametrimed  -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7' -H 'Cookie:' --data-binary $'------WebKitFormBoundaryu8pRtChbOypKCMie\r\nContent-Disposition: form-data; name="course-data"; filename=$filename\r\nContent-Type: application/gzip\r\n\r\n\r\n------WebKitFormBoundaryu8pRtChbOypKCMie--\r\n' --compressed
 
-curl 'https://'$sitefqdn'/course/' \
-  -H 'Connection: keep-alive' \
-  -H 'Pragma: no-cache' \
-  -H 'Cache-Control: no-cache' \
-  -H 'Accept: application/json, text/javascript, */*; q=0.01' \
-  -H 'X-CSRFToken: '$csrftoken \
-  -H 'X-Requested-With: XMLHttpRequest' \
-  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36' \
-  -H 'Content-Type: application/json; charset=UTF-8' \
-  -H 'Origin: https://'$sitefqdn \
-  -H 'Sec-Fetch-Site: same-origin' \
-  -H 'Sec-Fetch-Mode: cors' \
-  -H 'Sec-Fetch-Dest: empty' \
-  -H 'Referer: https://'$sitefqdn'/home/' \
-  -H 'Accept-Language: fr-FR,fr;q=0.9,cs;q=0.8,en-US;q=0.7,en;q=0.6,de;q=0.5' \
-  -H 'Cookie: csrftoken='$csrftoken'; edxloggedin=true; experiments_is_enterprise=false; sessionid='$sessionid \
-  --data-binary $json \
-  --compressed
-
-  echo "$filename is created"
-
-  sleep 1s
+  echo "$filename is imported"
 done
 
-echo "**********************************End of course(s) creation**********************************"
+echo "**********************************End of course(s) import**********************************"
