@@ -16,10 +16,9 @@ echo "***********************Starting course creation script********************
 
 
 #Token for authentication, using a session already pending
-sessionid=""
-csrftoken=""
-sessionid2=""
-
+sessionid="xxxxxxxxxxxxxxxxxx:xxxxx:xxxxxxxxxxxxx:::"
+csrftoken="XXXXXX"
+sitefqdn="studio.XXXXXX.com"
 
 #Check if folder named "courses" exist and go inside, if not exit with error code
 if [ -d "./courses" ]
@@ -48,8 +47,29 @@ do
   read -a strarr <<< "${filenametrimed}"
   json='{"org":"'${strarr[0]}'","number":"'${strarr[1]}'","display_name":"1","run":"'${strarr[2]}'"}'
   echo "$json"
-  curl 'https://studio.preprod.amundiacademy.com/course/' -H 'Connection: keep-alive' -H 'Pragma: no-cache' -H 'Cache-Control: no-cache' -H 'Accept: application/json, text/javascript, */*; q=0.01' -H 'Origin: https://studio.preprod.amundiacademy.com' -H 'X-CSRFToken: SufhxSryaj52tPa5bgawvX9jEWd5k92v' -H 'X-Requested-With: XMLHttpRequest' -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36' -H 'Content-Type: application/json; charset=UTF-8' -H 'Sec-Fetch-Site: same-origin' -H 'Sec-Fetch-Mode: cors' -H 'Referer: https://studio.preprod.amundiacademy.com/home/' -H 'Accept-Encoding: gzip, deflate, br' -H 'Accept-Language: fr-FR,fr;q=0.9,en-US;q=0.8,en;q=0.7' -H 'Cookie: ' --data-binary $json --compressed
+
+curl 'https://'$sitefqdn'/course/' \
+  -H 'Connection: keep-alive' \
+  -H 'Pragma: no-cache' \
+  -H 'Cache-Control: no-cache' \
+  -H 'Accept: application/json, text/javascript, */*; q=0.01' \
+  -H 'X-CSRFToken: '$csrftoken \
+  -H 'X-Requested-With: XMLHttpRequest' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36' \
+  -H 'Content-Type: application/json; charset=UTF-8' \
+  -H 'Origin: https://'$sitefqdn \
+  -H 'Sec-Fetch-Site: same-origin' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Referer: https://'$sitefqdn'/home/' \
+  -H 'Accept-Language: fr-FR,fr;q=0.9,cs;q=0.8,en-US;q=0.7,en;q=0.6,de;q=0.5' \
+  -H 'Cookie: csrftoken='$csrftoken'; edxloggedin=true; experiments_is_enterprise=false; sessionid='$sessionid \
+  --data-binary $json \
+  --compressed
+
   echo "$filename is created"
+
+  sleep 1s
 done
 
 echo "**********************************End of course(s) creation**********************************"
