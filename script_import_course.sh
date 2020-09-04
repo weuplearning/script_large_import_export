@@ -19,7 +19,7 @@ echo "***********************Starting course import script**********************
 sessionid="xxxxxxxxxxxxxxxxxxxx:xxxx:xxxxx"
 csrftoken="xxxxx"
 fqdn="studio.xxxxx"
-directory_of_exports="/xxxx/xxxx/xxxx"
+directory_of_exports="/xxxx/xxxx/xxxx/"
 
 #Check if folder named "courses" exist and go inside, if not exit with error cide
 if [ -d "./courses" ]
